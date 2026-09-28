@@ -1,0 +1,23 @@
+---
+import { site } from '../data/site';
+---
+
+<section class="band on-blue closing">
+  <div class="wrap inner">
+    <h2>Bring us the system you can't afford to get wrong.</h2>
+    <div class="cta-row">
+      <a class="btn" href="/contact/">{site.cta}</a>
+      <p class="cta-note">{site.ctaNote}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .inner {
+    display: grid;
+    gap: 2.5rem;
+  }
+  h2 {
+    max-width: 22ch;
+  }
+</style>

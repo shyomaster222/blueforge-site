@@ -1,0 +1,325 @@
+---
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+import Schema from '../components/Schema.astro';
+import { site, services } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+}
+
+const { title, description, schema, noindex = false, ogImage = '/og.png', ogType = 'website' } = Astro.props;
+const latest = (await getCollection('insights', (e) => !e.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site);
+const fullTitle = path === '/' ? title : `${title} | ${site.name}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0f2260" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} insights`} href="/rss.xml" />
+    {schema && <Schema data={schema} />}
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header on-blue">
+      <div class="wrap bar">
+        <a class="wordmark" href="/" aria-label="Blueforge home">
+          <span class="mark" aria-hidden="true"></span>Blueforge
+        </a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+        <nav id="site-nav" class="site-nav" aria-label="Main">
+          <ul>
+            {
+              site.nav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <a class="btn nav-cta" href="/contact/">{site.cta}</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="foot-band" aria-hidden="true"></div>
+      <div class="wrap foot">
+        <div class="foot-lead">
+          <a class="wordmark" href="/" aria-label="Blueforge home">
+            <span class="mark" aria-hidden="true"></span>Blueforge
+          </a>
+          <p>Software, AI and digital marketing, engineered to stay in service.</p>
+          <address class="nap">
+            <span class="entity">{site.legalEntity}</span>
+            <span>{site.address.street}</span>
+            <span>{site.address.city}, {site.address.region} {site.address.postal}, USA</span>
+            <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+            <a href={`mailto:${site.email}`}>{site.email}</a>
+          </address>
+        </div>
+        <nav aria-label="Services">
+          <h2>Services</h2>
+          <ul>
+            {services.map((s) => <li><a href={`/services/${s.slug}/`}>{s.name}</a></li>)}
+          </ul>
+        </nav>
+        <nav aria-label="Company">
+          <h2>Company</h2>
+          <ul>
+            {site.company.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          </ul>
+        </nav>
+        <nav aria-label="Latest insights">
+          <h2>Insights</h2>
+          <ul>
+            {latest.map((post) => <li><a href={`/insights/${post.id}/`}>{post.data.title}</a></li>)}
+          </ul>
+        </nav>
+      </div>
+      <div class="wrap legal">
+        <p class="fine">© {new Date().getFullYear()} Blueforge</p>
+        <ul>
+          {site.legal.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        </ul>
+      </div>
+    </footer>
+
+    <script>
+      const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+      const nav = document.getElementById('site-nav');
+      btn?.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!open));
+        nav?.classList.toggle('is-open', !open);
+        btn.textContent = open ? 'Menu' : 'Close';
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 10;
+    padding: 0.6rem 1rem;
+    background: var(--pale);
+    color: var(--ink);
+  }
+  .skip:focus {
+    top: 1rem;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid rgb(185 196 224 / 0.25);
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-decoration: none;
+    color: var(--white);
+  }
+  /* A small tempered bar, chamfered like everything else. */
+  .mark {
+    width: 2.1rem;
+    height: 1.05rem;
+    background: linear-gradient(90deg, var(--pale), var(--sky) 45%, var(--cobalt));
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .site-nav ul {
+    display: flex;
+    gap: 1.6rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-nav li a {
+    font-weight: 500;
+    text-decoration: none;
+    padding-block: 0.5rem;
+    border-bottom: 3px solid transparent;
+  }
+  .site-nav li a:hover,
+  .site-nav li a[aria-current='page'] {
+    border-bottom-color: var(--sky);
+  }
+  .nav-cta {
+    min-height: 2.9rem;
+    padding: 0.5rem 1.4rem;
+    font-size: 1rem;
+    --cut: 10px;
+  }
+
+  .menu-btn {
+    display: none;
+    font: inherit;
+    font-weight: 700;
+    color: var(--white);
+    background: transparent;
+    border: 2px solid var(--steel);
+    padding: 0.5rem 1.1rem;
+    cursor: pointer;
+  }
+
+  @media (max-width: 68rem) {
+    .bar {
+      flex-wrap: wrap;
+    }
+    .menu-btn {
+      display: inline-block;
+    }
+    .site-nav {
+      display: none;
+      flex-basis: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.25rem;
+      padding-block: 0.5rem 1rem;
+    }
+    .site-nav.is-open {
+      display: flex;
+    }
+    .site-nav ul {
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: var(--t-md);
+    }
+  }
+
+  .site-footer {
+    background: var(--blued-deep);
+    color: var(--steel);
+  }
+  .foot-band {
+    height: 0.75rem;
+    background: linear-gradient(90deg, var(--pale), var(--sky) 35%, var(--cobalt) 70%, var(--blued));
+  }
+  .foot {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1.5fr;
+    gap: 2.5rem;
+    padding-block: 4rem 0;
+  }
+  .foot-lead {
+    display: grid;
+    gap: 1.1rem;
+    align-content: start;
+    justify-items: start;
+  }
+  .foot-lead p {
+    max-width: 36ch;
+  }
+  /* Business name, address and phone: plain and readable. */
+  .nap {
+    font-style: normal;
+    display: grid;
+    gap: 0.3rem;
+    color: var(--white);
+    line-height: 1.5;
+  }
+  .nap .entity {
+    font-weight: 700;
+  }
+  .site-footer h2 {
+    font-size: 1rem;
+    font-stretch: 112%;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--sky);
+    margin-bottom: 1rem;
+  }
+  .site-footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+  .site-footer a {
+    color: var(--white);
+    text-decoration-color: transparent;
+  }
+  .site-footer .foot-lead a:not(.wordmark) {
+    text-decoration-color: currentColor;
+  }
+  .site-footer a:hover {
+    color: var(--sky);
+    text-decoration-color: currentColor;
+  }
+  .legal {
+    margin-top: 3rem;
+    padding-block: 1.5rem 2rem;
+    border-top: 1px solid rgb(180 195 230 / 0.25);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .legal ul {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .fine,
+  .legal a {
+    font-size: var(--t-sm);
+  }
+  @media (max-width: 60rem) {
+    .foot {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 36rem) {
+    .foot {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,184 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import Closing from '../components/Closing.astro';
+import { engagements, commercialTerms, faqGroups } from '../data/site';
+
+const costFaqs = faqGroups.find((g) => g.title === 'Cost and contracts')?.items ?? [];
+---
+
+<Base
+  title="Engagements"
+  description="How you work with Blueforge: a fixed-price assay, a build quoted against agreed pass criteria, and a service agreement that keeps the system healthy after launch."
+>
+  <PageHero
+    title="Three engagements, taken in order."
+    lede="Every project starts with a fixed-price assay. You only commit to a build once you've seen what we found and what it will cost."
+  />
+
+  <section class="band on-paper">
+    <div class="wrap">
+      <ol class="steps">
+        {
+          engagements.map((e, i) => (
+            <li>
+              <div class="id">
+                <p class="n">{i + 1}</p>
+                <h2>{e.name}</h2>
+                <p class="length">{e.length}</p>
+                <p class="todo">{e.price}</p>
+              </div>
+              <div class="body">
+                <p class="best">{e.bestFor}</p>
+                <ul>
+                  {e.includes.map((line) => <li>{line}</li>)}
+                </ul>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="band on-white">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>Commercial terms, in plain words</h2>
+      </div>
+      <ul class="terms">
+        {
+          commercialTerms.map((t) => (
+            <li>
+              <h3>{t.h}</h3>
+              <p>{t.t}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="band on-paper">
+    <div class="wrap split">
+      <h2>Questions about cost</h2>
+      <div>
+        <Faq items={costFaqs} />
+        <p class="more"><a href="/faq/">Read all questions</a></p>
+      </div>
+    </div>
+  </section>
+
+  <Closing />
+</Base>
+
+<style>
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 6px solid var(--ink);
+  }
+  .steps > li {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 2rem clamp(2rem, 6vw, 6rem);
+    padding-block: 3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .id {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+    align-content: start;
+  }
+  .n {
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    line-height: 1;
+    color: var(--cobalt);
+  }
+  .id h2 {
+    font-size: clamp(1.7rem, 1.1rem + 2vw, 2.6rem);
+  }
+  .length {
+    font-weight: 600;
+  }
+  .body {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .best {
+    font-size: var(--t-md);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .body ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 3px solid var(--ink);
+  }
+  .body li {
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--rule);
+    line-height: 1.45;
+  }
+
+  .terms {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .terms li {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+    background: var(--paper);
+    padding: 1.75rem;
+    clip-path: var(--chamfer);
+    --cut: 20px;
+  }
+  .terms p {
+    color: var(--slate);
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 2rem clamp(2rem, 6vw, 6rem);
+    align-items: start;
+  }
+  .split h2 {
+    font-size: clamp(1.7rem, 1.1rem + 2vw, 2.6rem);
+  }
+  .more {
+    margin-top: 1.5rem;
+    font-weight: 600;
+  }
+  .more a:hover {
+    color: var(--cobalt);
+  }
+  @media (max-width: 64rem) {
+    .terms {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 58rem) {
+    .steps > li,
+    .split {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 34rem) {
+    .terms {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

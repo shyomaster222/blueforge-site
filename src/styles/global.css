@@ -1,0 +1,235 @@
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource-variable/archivo/wdth-italic.css';
+
+/* Tokens. A blue system: blued-steel grounds, ice paper, cobalt and sky accents.
+   The temper spectrum appears once, in the hero strip. */
+:root {
+  --blued: #0f2260;
+  --blued-deep: #0a1840;
+  --ink: #0a1840;
+  --paper: #e9f0fd;
+  --white: #ffffff;
+  --cobalt: #2f5cf0;
+  --sky: #8db4ff;
+  --pale: #dbe7ff;
+  --pale-hot: #ffffff;
+  --steel: #b4c3e6;
+  --slate: #46557a;
+  --rule: #c5d2ea;
+
+  --font: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
+
+  --t-sm: 0.875rem;
+  --t-base: 1.0625rem;
+  --t-md: 1.25rem;
+  --t-lg: clamp(1.3rem, 1.15rem + 0.7vw, 1.6rem);
+  --t-xl: clamp(1.9rem, 1.2rem + 2.6vw, 3.4rem);
+  --t-hero: clamp(2rem, 9.6vw, 8.3rem);
+
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --max: 84rem;
+  --band: clamp(4.5rem, 9vw, 8rem);
+  --cut: 14px;
+  /* One machining detail used across the site: a chamfered corner. */
+  --chamfer: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-stretch: 125%;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--t-hero);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+}
+h2 {
+  font-size: var(--t-xl);
+}
+h3 {
+  font-size: var(--t-lg);
+  font-stretch: 112%;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--sky);
+  outline-offset: 3px;
+}
+.on-paper :focus-visible,
+.on-white :focus-visible {
+  outline-color: var(--cobalt);
+}
+
+::selection {
+  background: var(--pale);
+  color: var(--ink);
+}
+
+/* Layout */
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.band {
+  padding-block: var(--band);
+}
+.on-blue {
+  background: var(--blued);
+  color: var(--white);
+}
+.on-paper {
+  background: var(--paper);
+}
+.on-white {
+  background: var(--white);
+}
+
+.band-head {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.lede {
+  font-size: var(--t-md);
+  line-height: 1.5;
+  max-width: 58ch;
+  color: var(--slate);
+}
+.on-blue .lede {
+  color: var(--steel);
+}
+
+/* Buttons: chamfered plate. clip-path hides outlines, so focus is drawn inside. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.5rem;
+  padding: 0.85rem 2rem;
+  border: 0;
+  background: var(--pale);
+  color: var(--ink);
+  font: inherit;
+  font-stretch: 112%;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  text-decoration: none;
+  cursor: pointer;
+  clip-path: var(--chamfer);
+  transition: background 0.15s;
+}
+.btn:hover {
+  background: var(--pale-hot);
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 4px var(--ink);
+}
+.btn-blue {
+  background: var(--blued);
+  color: var(--white);
+}
+.btn-blue:hover {
+  background: var(--cobalt);
+}
+.btn-blue:focus-visible {
+  box-shadow: inset 0 0 0 4px var(--pale);
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+.cta-note {
+  font-size: 0.95rem;
+  max-width: 34ch;
+  color: var(--slate);
+}
+.on-blue .cta-note {
+  color: var(--steel);
+}
+
+/* Facts we don't have yet. Visible on purpose so they can't ship unnoticed. */
+.todo {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 0.1rem 0.5rem;
+  border: 1.5px dashed currentColor;
+  font-size: var(--t-sm);
+  opacity: 0.85;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

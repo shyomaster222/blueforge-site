@@ -1,0 +1,358 @@
+---
+import Base from '../layouts/Base.astro';
+import TemperStrip from '../components/TemperStrip.astro';
+import StageList from '../components/StageList.astro';
+import Closing from '../components/Closing.astro';
+import PostList from '../components/PostList.astro';
+import { getPosts } from '../data/insights';
+import { site, services, ownership, fit } from '../data/site';
+
+const posts = (await getPosts()).slice(0, 3);
+const schema = [
+  {
+    '@type': 'Organization',
+    name: site.name,
+    url: Astro.site?.href,
+    email: site.email,
+    telephone: site.phone,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: site.address.street,
+      addressLocality: site.address.city,
+      addressRegion: site.address.region,
+      postalCode: site.address.postal,
+      addressCountry: site.address.country,
+    },
+    description: 'An engineering-led agency for software development, AI implementation, AI consulting and digital marketing.',
+  },
+  { '@type': 'WebSite', name: site.name, url: Astro.site?.href },
+];
+---
+
+<Base
+  title="Blueforge: software, AI and digital marketing built to stay in service"
+  description="Blueforge is an engineering-led agency for software development, AI implementation, AI consulting and digital marketing. We build, harden and run systems for established companies."
+  schema={schema}
+>
+  <section class="hero on-blue">
+    <div class="wrap">
+      <h1>Build it once.<br />Run it for years.</h1>
+      <div class="hero-row">
+        <p class="lede">
+          Blueforge is an engineering-led agency for software, AI and digital marketing. We build the systems
+          an established company can run on for years, harden them before launch, and stay to keep them running.
+        </p>
+        <div class="cta-row">
+          <a class="btn" href="/contact/">{site.cta}</a>
+          <p class="cta-note">{site.ctaNote}</p>
+        </div>
+      </div>
+      <TemperStrip labels animate>
+        <figcaption>
+          Steel changes colour as it's tempered. Straight from the quench it's hard but brittle. By the time it turns
+          blue, it's tough enough to be used for decades. We build to blue.
+        </figcaption>
+      </TemperStrip>
+    </div>
+  </section>
+
+  <section class="band on-paper">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>What we make</h2>
+        <p class="lede">Four kinds of work, one engineering standard. Each line links to the full specification.</p>
+      </div>
+      <table class="spec">
+        <thead>
+          <tr>
+            <th scope="col">Service</th>
+            <th scope="col">What it's for</th>
+            <th scope="col">You receive</th>
+            <th scope="col">Typical duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            services.map((s) => (
+              <tr>
+                <th scope="row">
+                  <a href={`/services/${s.slug}/`}>{s.name}</a>
+                </th>
+                <td data-label="What it's for">{s.purpose}</td>
+                <td data-label="You receive">{s.handover}</td>
+                <td data-label="Typical duration" class="num">{s.duration}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="band on-blue">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>How a project moves through the shop</h2>
+        <p class="lede">
+          Four stages, always in this order. The third is the one we refuse to cut, however tight the deadline.
+        </p>
+      </div>
+      <StageList />
+      <p class="more"><a href="/process/">Read the full process, stage by stage</a></p>
+    </div>
+  </section>
+
+  <!-- Proof slot: add real client results here once they exist. Nothing invented ships. -->
+
+  <section class="band on-white">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>Everything we build is yours.</h2>
+        <p class="lede">
+          You should be able to replace us in a month without losing a line of code. We set projects up that way from
+          the first day.
+        </p>
+      </div>
+      <dl class="own-list">
+        {
+          ownership.map((o) => (
+            <div>
+              <dt>{o.h}</dt>
+              <dd>{o.t}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="band on-paper">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>Who we're the right shop for</h2>
+      </div>
+      <div class="fit">
+        <div>
+          <h3>A good fit</h3>
+          <ul class="yes">
+            {fit.good.map((g) => <li>{g}</li>)}
+          </ul>
+        </div>
+        <div>
+          <h3>Better served elsewhere</h3>
+          <ul class="no">
+            {fit.poor.map((p) => <li>{p}</li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band on-white">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>From the workshop</h2>
+      </div>
+      <PostList posts={posts} />
+    </div>
+  </section>
+
+  <Closing />
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 7vw, 6.5rem) clamp(3.5rem, 7vw, 6rem);
+  }
+  .hero-row {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 2rem clamp(2rem, 6vw, 6rem);
+    align-items: end;
+    margin-block: clamp(2rem, 4vw, 3.5rem) clamp(3rem, 6vw, 5.5rem);
+  }
+  .hero-row .lede {
+    color: var(--white);
+  }
+  figcaption {
+    margin-top: 1.75rem;
+    max-width: 62ch;
+    color: var(--steel);
+  }
+  @media (max-width: 56rem) {
+    .hero-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Spec sheet */
+  .spec {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    border-top: 6px solid var(--ink);
+  }
+  .spec thead th {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--slate);
+    padding: 0.9rem 1.5rem 0.9rem 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .spec tbody th,
+  .spec td {
+    vertical-align: top;
+    padding: 1.75rem 1.5rem 1.75rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .spec tbody th {
+    width: 24%;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: var(--t-lg);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .spec tbody th a {
+    text-decoration-color: var(--cobalt);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.25em;
+  }
+  .spec tbody th a:hover {
+    color: var(--cobalt);
+  }
+  .spec td {
+    width: 28%;
+  }
+  .spec .num {
+    width: 20%;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    padding-right: 0;
+  }
+  @media (max-width: 58rem) {
+    .spec thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+    .spec,
+    .spec tbody,
+    .spec tr,
+    .spec th,
+    .spec td,
+    .spec .num {
+      display: block;
+      width: auto;
+    }
+    .spec tr {
+      padding-block: 1.75rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .spec tbody th,
+    .spec td {
+      border: 0;
+      padding: 0 0 1rem;
+    }
+    .spec td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--slate);
+    }
+  }
+
+  .more {
+    margin-top: 3rem;
+    font-weight: 600;
+  }
+  .more a:hover {
+    color: var(--sky);
+  }
+
+  /* Ownership: four chamfered plates. */
+  .own-list {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .own-list div {
+    background: var(--paper);
+    padding: 1.75rem;
+    clip-path: var(--chamfer);
+    --cut: 20px;
+  }
+  .own-list dt {
+    font-stretch: 112%;
+    font-weight: 700;
+    font-size: var(--t-md);
+  }
+  .own-list dd {
+    margin: 0.4rem 0 0;
+    color: var(--slate);
+  }
+
+  .fit {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 3rem clamp(2rem, 6vw, 6rem);
+  }
+  .fit ul {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    border-top: 6px solid var(--ink);
+  }
+  .fit li {
+    padding: 1.1rem 0 1.1rem 2.25rem;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    font-size: var(--t-md);
+    line-height: 1.4;
+  }
+  .fit li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.55rem;
+    width: 1.1rem;
+    height: 0.3rem;
+    background: var(--cobalt);
+  }
+  /* Plus for fits, bar for doesn't: shape carries the meaning, not only colour. */
+  .fit .yes li::after {
+    content: '';
+    position: absolute;
+    left: 0.4rem;
+    top: 1.15rem;
+    width: 0.3rem;
+    height: 1.1rem;
+    background: var(--cobalt);
+  }
+  .fit .no li::before {
+    background: var(--slate);
+  }
+  .fit .no li {
+    color: var(--slate);
+  }
+
+  @media (max-width: 64rem) {
+    .own-list {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 56rem) {
+    .fit {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 34rem) {
+    .own-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

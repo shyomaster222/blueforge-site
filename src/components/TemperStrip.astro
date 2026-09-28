@@ -1,0 +1,95 @@
+---
+// The site's signature: the colours steel passes through as it is tempered.
+// `labels` shows temperatures and names (hero). Without it, the strip is a plain band.
+import { temper } from '../data/site';
+
+interface Props {
+  labels?: boolean;
+  animate?: boolean;
+}
+const { labels = false, animate = false } = Astro.props;
+const gradient = `linear-gradient(90deg, ${temper.map((t, i) => `${t.color} ${((i / temper.length) * 100).toFixed(2)}%`).join(', ')})`;
+---
+
+<figure class:list={['temper', { animate }]}>
+  <div class="strip" style={`background:${gradient}`} role="img" aria-label="Steel temper colours, from pale straw at 220 degrees to light blue at 310 degrees"></div>
+  {
+    labels && (
+      <ol class="scale" aria-hidden="true">
+        {temper.map((t, i) => (
+          <li style={`--i:${i}`}>
+            <span class="temp">{t.temp}</span>
+            <span class="name">{t.name}</span>
+          </li>
+        ))}
+      </ol>
+    )
+  }
+  <slot />
+</figure>
+
+<style>
+  .temper {
+    margin: 0;
+  }
+  .strip {
+    height: clamp(4.5rem, 10vw, 8.5rem);
+    clip-path: var(--chamfer);
+  }
+  .scale {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+  }
+  .scale li {
+    display: grid;
+    gap: 0.1rem;
+    border-left: 2px solid var(--steel);
+    padding-left: 0.6rem;
+    line-height: 1.25;
+  }
+  .temp {
+    font-stretch: 112%;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .name {
+    font-size: var(--t-sm);
+    color: var(--steel);
+  }
+
+  /* The one orchestrated moment: on load, the bar heats through the colours. */
+  .animate .strip {
+    animation: heat 1.9s cubic-bezier(0.5, 0, 0.2, 1) 0.2s both;
+  }
+  .animate .scale li {
+    animation: mark 0.4s ease-out both;
+    animation-delay: calc(0.35s + var(--i) * 0.3s);
+  }
+  @keyframes heat {
+    from {
+      clip-path: polygon(0 0, 0 0, 0 0, 0 100%, 0 100%, 0 100%);
+    }
+    to {
+      clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+    }
+  }
+  @keyframes mark {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .scale {
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 0.9rem;
+    }
+  }
+</style>

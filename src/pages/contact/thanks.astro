@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../data/insights';
+
+const posts = (await getPosts()).slice(0, 2);
+const next = [
+  'Your message has gone to a senior engineer, who reads it the same day.',
+  'We reply within one working day to set up a 30-minute call.',
+  "On the call we ask about the system, the data and the constraints. If it's a fit, the next step is a scoped assay with a fixed price.",
+];
+---
+
+<Base title="Message sent" description="Thanks for getting in touch with Blueforge. Here's what happens next." noindex>
+  <PageHero title="Sent to an engineer." lede="You'll hear from us within one working day. Here's what happens from here." />
+
+  <section class="band on-paper">
+    <div class="wrap">
+      <ol class="next">
+        {next.map((n) => <li>{n}</li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="band on-white">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>Worth reading before the call</h2>
+      </div>
+      <PostList posts={posts} />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .next {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+  }
+  .next li {
+    counter-increment: step;
+    border-top: 6px solid var(--ink);
+    padding-top: 1.1rem;
+    font-size: var(--t-md);
+    line-height: 1.45;
+  }
+  .next li::before {
+    content: counter(step);
+    display: block;
+    margin-bottom: 0.6rem;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    line-height: 1;
+    color: var(--cobalt);
+  }
+  @media (max-width: 52rem) {
+    .next {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

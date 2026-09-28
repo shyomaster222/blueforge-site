@@ -1,0 +1,55 @@
+---
+// The four engagement stages. A true sequence, so it is numbered.
+// Each stage sits one step further along the blue ramp.
+import { stages } from '../data/site';
+---
+
+<ol class="stages">
+  {
+    stages.map((s, i) => (
+      <li style={`--c:${s.color}`}>
+        <p class="n">{i + 1}</p>
+        <h3>{s.name}</h3>
+        <p class="sum">{s.summary}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .stages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  li {
+    border-top: 0.9rem solid var(--c);
+    padding: 1.5rem 2rem 0 0;
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+  }
+  .n {
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    line-height: 1;
+    color: var(--sky);
+    font-variant-numeric: tabular-nums;
+  }
+  .sum {
+    color: var(--steel);
+  }
+  @media (max-width: 56rem) {
+    .stages {
+      grid-template-columns: 1fr;
+    }
+    li {
+      border-top: 0;
+      border-left: 0.9rem solid var(--c);
+      padding: 0.25rem 0 2rem 1.5rem;
+    }
+  }
+</style>

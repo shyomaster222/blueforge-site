@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Closing from '../components/Closing.astro';
+import { stages } from '../data/site';
+---
+
+<Base
+  title="Process"
+  description="How a Blueforge project runs: assay, forge, temper and service. What happens in each stage, what you receive, and why the hardening stage is never skipped."
+>
+  <PageHero
+    title="Four stages, in the same order every time."
+    lede="The names come from the forge, and the work is plain engineering. Each stage ends with something you can inspect before the next one starts."
+  />
+
+  <section class="on-paper">
+    <ol class="stages">
+      {
+        stages.map((s, i) => (
+          <li style={`--c:${s.colorOnLight}`} id={s.id}>
+            <div class="wrap row">
+              <div class="id">
+                <p class="n">{i + 1}</p>
+                <h2>{s.name}</h2>
+                <p class="forge">{s.forge}</p>
+              </div>
+              <div class="body">
+                <p class="sum">{s.summary}</p>
+                <p>{s.detail}</p>
+              </div>
+              <div class="out">
+                <h3>You receive</h3>
+                <ul>
+                  {s.outputs.map((o) => <li>{o}</li>)}
+                </ul>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <Closing />
+</Base>
+
+<style>
+  .stages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .stages > li {
+    border-top: 0.9rem solid var(--c);
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .stages > li:nth-child(even) {
+    background: var(--white);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+    gap: 2rem clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+  .id {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .n {
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: var(--t-xl);
+    line-height: 1;
+    color: var(--slate);
+  }
+  .forge {
+    color: var(--slate);
+    font-style: italic;
+    max-width: 30ch;
+  }
+  .body {
+    display: grid;
+    gap: 1rem;
+  }
+  .sum {
+    font-size: var(--t-md);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .out h3 {
+    font-size: 1rem;
+    font-stretch: 100%;
+    color: var(--slate);
+    font-weight: 600;
+  }
+  .out ul {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    border-top: 3px solid var(--ink);
+  }
+  .out li {
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  @media (max-width: 58rem) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

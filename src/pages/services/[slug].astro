@@ -1,0 +1,305 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Faq from '../../components/Faq.astro';
+import PostList from '../../components/PostList.astro';
+import Closing from '../../components/Closing.astro';
+import { site, services, stages, type Service } from '../../data/site';
+import { getPosts } from '../../data/insights';
+
+export function getStaticPaths() {
+  return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+interface Props {
+  service: Service;
+}
+const { service: s } = Astro.props;
+const related = (await getPosts()).filter((p) => p.data.service === s.id);
+const others = services.filter((o) => o.id !== s.id);
+const inSentence = s.name.startsWith('AI') ? s.name : s.name.charAt(0).toLowerCase() + s.name.slice(1);
+
+const schema = [
+  {
+    '@type': 'Service',
+    name: s.name,
+    description: s.purpose,
+    provider: { '@type': 'Organization', name: site.name, url: Astro.site?.href },
+    url: new URL(`/services/${s.slug}/`, Astro.site).href,
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: s.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<Base title={s.name} description={s.purpose} schema={schema}>
+  <PageHero title={s.name} lede={s.purpose} crumbs={[{ label: 'Services', href: '/services/' }, { label: s.name }]}>
+    <div class="cta-row">
+      <a class="btn" href={`/contact/?need=${s.id}`}>{site.cta}</a>
+      <p class="cta-note">Typical duration: {s.duration}.</p>
+    </div>
+  </PageHero>
+
+  <section class="band on-paper">
+    <div class="wrap split">
+      <div class="head">
+        <h2>When to call us</h2>
+        <p class="lede">{s.forWho}</p>
+      </div>
+      <ul class="signs">
+        {s.signs.map((sign) => <li>{sign}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="band on-white">
+    <div class="wrap split">
+      <div class="head">
+        <h2>What we deliver</h2>
+        <p class="lede">{s.intro}</p>
+      </div>
+      <div class="sheet">
+        <ul>
+          {s.delivers.map((d) => <li>{d}</li>)}
+        </ul>
+        <dl>
+          <div>
+            <dt>Yours at handover</dt>
+            <dd>{s.handover}</dd>
+          </div>
+          <div>
+            <dt>Typical duration</dt>
+            <dd>{s.duration}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="band on-blue">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>How it moves through the shop</h2>
+        <p class="lede">The same four stages as every project, applied to {inSentence}.</p>
+      </div>
+      <ol class="stages">
+        {
+          stages.map((st, i) => (
+            <li style={`--c:${st.color}`}>
+              <p class="n">{i + 1}</p>
+              <h3>{st.name}</h3>
+              <p class="sum">{s.stagesFor[i]}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="more"><a href="/process/">Read the full process</a></p>
+    </div>
+  </section>
+
+  <section class="band on-paper">
+    <div class="wrap split">
+      <h2>Questions about {inSentence}</h2>
+      <div>
+        <Faq items={s.faqs} />
+        <p class="more dark"><a href="/faq/">Read all questions</a></p>
+      </div>
+    </div>
+  </section>
+
+  {
+    related.length > 0 && (
+      <section class="band on-white">
+        <div class="wrap">
+          <div class="band-head">
+            <h2>From the workshop</h2>
+          </div>
+          <PostList posts={related} />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="band on-paper others-band">
+    <div class="wrap">
+      <div class="band-head">
+        <h2>Other services</h2>
+      </div>
+      <ul class="others">
+        {
+          others.map((o) => (
+            <li>
+              <a href={`/services/${o.slug}/`}>
+                <h3>{o.name}</h3>
+                <p>{o.purpose}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Closing />
+</Base>
+
+<style>
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 2.5rem clamp(2rem, 6vw, 6rem);
+    align-items: start;
+  }
+  .head {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .split h2 {
+    font-size: clamp(1.7rem, 1.1rem + 2vw, 2.6rem);
+  }
+
+  .signs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 6px solid var(--ink);
+  }
+  .signs li {
+    padding-block: 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    font-stretch: 108%;
+    font-weight: 600;
+    font-size: var(--t-md);
+    line-height: 1.4;
+  }
+
+  .sheet {
+    display: grid;
+    gap: 1.75rem;
+  }
+  .sheet ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 6px solid var(--ink);
+  }
+  .sheet li {
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--t-md);
+    line-height: 1.4;
+  }
+  .sheet dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 2rem;
+  }
+  .sheet dt {
+    font-weight: 600;
+    color: var(--slate);
+    font-size: 1rem;
+  }
+  .sheet dd {
+    margin: 0.3rem 0 0;
+    font-weight: 600;
+  }
+
+  .stages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .stages li {
+    border-top: 0.9rem solid var(--c);
+    padding: 1.5rem 2rem 0 0;
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+  }
+  .stages .n {
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    line-height: 1;
+    color: var(--sky);
+  }
+  .stages .sum {
+    color: var(--steel);
+  }
+  .more {
+    margin-top: 2.5rem;
+    font-weight: 600;
+  }
+  .more a:hover {
+    color: var(--sky);
+  }
+  .more.dark {
+    margin-top: 1.5rem;
+  }
+  .more.dark a:hover {
+    color: var(--cobalt);
+  }
+
+  .others-band {
+    border-top: 1px solid var(--rule);
+  }
+  .others {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .others a {
+    display: grid;
+    gap: 0.6rem;
+    height: 100%;
+    align-content: start;
+    background: var(--white);
+    padding: 1.75rem;
+    text-decoration: none;
+    clip-path: var(--chamfer);
+    --cut: 20px;
+  }
+  .others a:hover h3 {
+    color: var(--cobalt);
+  }
+  .others a:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 4px var(--cobalt);
+  }
+  .others p {
+    color: var(--slate);
+  }
+
+  @media (max-width: 58rem) {
+    .split,
+    .others {
+      grid-template-columns: 1fr;
+    }
+    .stages {
+      grid-template-columns: 1fr;
+    }
+    .stages li {
+      border-top: 0;
+      border-left: 0.9rem solid var(--c);
+      padding: 0.25rem 0 2rem 1.5rem;
+    }
+  }
+  @media (max-width: 34rem) {
+    .sheet dl {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+  }
+</style>
