@@ -1,10 +1,14 @@
 # Blueforge site
 
-Astro static site, 19 routes.
+Astro static site, 19 routes. Live at https://blueforgedigital.net.
 
     npm install
     npm run dev       # http://localhost:4322
     npm run build     # output in dist/
+
+## Hosting
+
+GitHub Pages from the public repo `shyomaster222/blueforge-site`. Every push to `main` runs `.github/workflows/deploy.yml`, which builds with Astro and deploys. `public/CNAME` holds the custom domain. DNS is at iwantmyname: four GitHub Pages A records on `@`, `www` CNAME to `shyomaster222.github.io`, Forward Email MX records (hello@ forwards to the founder's inbox) and SPF.
 
 ## Pages
 
@@ -37,9 +41,8 @@ Service specs, the four stages, ownership and fit lists live in `src/data/site.t
 ## Before launch
 
 - Positioning is a proposal. Confirm each operating promise is one the team will keep: a senior engineer leads and codes on every project, two-week releases, the hardening stage is never cut, fixed-price assay, no margin on cloud, licences or model usage, no reselling or referral fees, on-site assays, NDAs and DPAs signed up front, reply within one working day, the durations per service and engagement.
-- Fill every `[bracketed]` fact. They render with a dashed outline so they can't ship unnoticed. Current list: assay price, build pricing model, service agreement pricing, response times, invoicing terms and notice periods, typical project size, preferred stack, security certifications, location; founder, lead engineer and team names, roles, bios, photos; and on the legal pages the legal entity, registered address, jurisdiction, hosting, form and email providers, retention period, response period, liability wording, last-updated date.
-- Legal pages are templates and need a lawyer's review.
+- Fill every `[bracketed]` fact. They render with a dashed outline so they can't ship unnoticed. Current list: assay price, build pricing model, service agreement pricing, response times, invoicing terms and notice periods, typical project size, preferred stack, security certifications, location; founder, lead engineer and team names, roles, bios, photos.
+- Legal pages are complete (Blueforge Digital LLC, Sheridan WY address, phone, Wyoming law) and public. Have a lawyer look them over when convenient.
 - Article dates are placeholders from the build week. Set real publish dates, and name authors if you want bylines beyond "The Blueforge team".
-- Set the real email and, if wanted, a form endpoint in `src/data/site.ts`. With no endpoint the contact form opens the visitor's email app.
-- Set `site` in `astro.config.mjs` and the sitemap line in `public/robots.txt` to the production URL.
+- Email: hello@blueforgedigital.net forwards via Forward Email (free, DNS-only, receive-only); the target is the `forward-email=` TXT record at iwantmyname. If wanted, set a form endpoint in `src/data/site.ts`; with no endpoint the contact form opens the visitor's email app.
 - Add real proof (results, client names, testimonials) in the marked proof slot on the home page. None is invented here, and there is no case-study section by choice.
